@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Moj blok za belu</string>
+    <string name="action_settings">Settings</string>
+    <string name="label_mi">MI</string>
+    <string name="label_vi">VI</string>
+    <string name="bodovi_hint">Bodovi</string>
+    <string name="zvanja_hint">Zvanja</string>
+    <string name="bela"><![CDATA[Bela (K&Q)]]></string>
+    <string name="action_obrisi">Obriši zadnje</string>
+    <string name="action_prethodne">Prethodne igre</string>
+    <string name="action_about">O aplikaciji</string>
+</resources>
