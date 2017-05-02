@@ -15,19 +15,19 @@
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         />
 
-    <LinearLayout
+    <RadioGroup
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <TextView
+        <RadioButton
             android:id="@+id/label_mi"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="0.5"
             android:text="@string/label_mi"
-            android:textAlignment="center"
-            android:textSize="36sp" />
+            android:textSize="36sp"
+            android:layout_weight="0.5"
+            android:gravity="center"/>
 
         <TextView
             android:id="@+id/colon"
@@ -36,15 +36,18 @@
             android:text="|"
             android:textSize="36sp" />
 
-        <TextView
+
+        <RadioButton
             android:id="@+id/label_vi"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="0.5"
+            android:layout_gravity="end"
+            android:layoutDirection="rtl"
             android:text="@string/label_vi"
-            android:textAlignment="center"
-            android:textSize="36sp" />
-    </LinearLayout>
+            android:textSize="36sp"
+            android:layout_weight="0.5"
+            android:gravity="center"/>
+    </RadioGroup>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -57,6 +60,7 @@
             android:layout_weight="0.5"
             android:hint="@string/bodovi_hint"
             android:inputType="number"
+            android:maxLength="3"
         />
         <EditText
             android:id="@+id/bodovi_vi"
@@ -65,6 +69,7 @@
             android:layout_weight="0.5"
             android:hint="@string/bodovi_hint"
             android:inputType="number"
+            android:maxLength="3"
         />
     </LinearLayout>
 
@@ -78,6 +83,7 @@
             android:layout_weight="0.5"
             android:hint="@string/zvanja_hint"
             android:inputType="number"
+            android:maxLength="3"
         />
         <EditText
             android:id="@+id/zvanja_vi"
@@ -86,6 +92,7 @@
             android:layout_weight="0.5"
             android:hint="@string/zvanja_hint"
             android:inputType="number"
+            android:maxLength="3"
         />
     </LinearLayout>
 
@@ -106,12 +113,19 @@
             android:text="@string/bela"/>
     </LinearLayout>
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:text="@string/gumb_tekst"
+        android:onClick="processInput"/>
+
     <TextView
         android:id="@+id/ukupan_score"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="10dp"
-        android:text="999 | 999"
+        android:text="@string/default_score"
         android:textAlignment="center"
         android:textSize="30sp"
         android:textStyle="bold" />
@@ -121,7 +135,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:lineSpacingExtra="4sp"
-        android:text="162 |   0\n 75 |  87\n 21 | 141"
+        android:text=""
         android:textAlignment="center"
         android:textSize="24sp"
         android:typeface="monospace"
