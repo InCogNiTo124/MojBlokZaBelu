@@ -2,6 +2,7 @@ package marijansmetko.mojblokzabelu;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.provider.Settings;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,10 +31,17 @@ public class BelaBlokUnitTest {
         dbHandler.addPoints(100, 62);
         dbHandler.addPoints(0, 252);
         dbHandler.addPoints(82, 80);
+        try {
+            Thread.sleep(2000);
+            dbHandler.addGame();
+            Thread.sleep(2000);
+            dbHandler.addGame();
+            Thread.sleep(2000);
+            dbHandler.addGame();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
-        dbHandler.addGame();
-        dbHandler.addGame();
-        dbHandler.addGame();
         Cursor c = db.rawQuery("SELECT * FROM GAMES", null);
         while (c.moveToNext()) {
             System.out.print(c.getString(0));
@@ -60,7 +68,14 @@ public class BelaBlokUnitTest {
         dbHandler.deleteLastPoints();
         System.out.println();
         System.out.println(Utility.stringPointsFromDatabase(dbHandler.getPoints()));
+        System.out.println();
 
+        c = dbHandler.getAllGames();
+        while(c.moveToNext()) {
+            System.out.print(c.getString(0));
+            System.out.print('\t');
+            System.out.println(Utility.stringScoreFromDatabase(new int[]{c.getInt(1), c.getInt(2)}));
+        }
         c.close();
     }
 }

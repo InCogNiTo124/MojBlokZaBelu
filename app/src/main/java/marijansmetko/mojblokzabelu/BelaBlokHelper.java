@@ -73,6 +73,7 @@ class BelaBlokHelper extends SQLiteOpenHelper {
         while(c.moveToNext()) {
             x = c.getInt(0);
         }
+        c.close();
         return x;
     }
 
@@ -140,5 +141,20 @@ class BelaBlokHelper extends SQLiteOpenHelper {
 
     public void setCurrentGame(int currentGame) {
         CURRENT_GAME = currentGame;
+    }
+
+    public Cursor getAllGames() {
+        SQLiteDatabase db = getReadableDatabase();
+        String sql = "SELECT g." + GamesTable._ID +
+                ", g." + GamesTable.COLUMN_START_DATE +
+                ", sum(p." + PointsTable.COLUMN_BODOVI_MI +
+                "), sum(p." + PointsTable.COLUMN_BODOVI_VI +
+                ") FROM " + GamesTable.TABLE_NAME +
+                " g LEFT JOIN " + PointsTable.TABLE_NAME +
+                " p ON g." + GamesTable._ID +
+                " = p." + PointsTable.COLUMN_GAME_ID +
+                " GROUP BY g." + GamesTable.COLUMN_START_DATE;
+//        System.out.println(sql);
+        return db.rawQuery(sql, null);
     }
 }

@@ -1,18 +1,27 @@
 package marijansmetko.mojblokzabelu;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.view.LayoutInflaterCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.CursorAdapter;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -139,13 +148,33 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_nova_igra:
-                Log.d(Constants.TAG, "Nova igra");
+                dbHelper.addGame();
+                this.updateUI();
                 return true;
             case R.id.action_obrisi:
                 Log.d(Constants.TAG, "Obrisi");
                 return true;
             case R.id.action_prethodne:
-                Log.d(Constants.TAG, "Prethodne igre");
+                Cursor cursor = dbHelper.getAllGames();
+                GameAdapter gameAdapter = new GameAdapter(this, cursor);
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setAdapter(gameAdapter, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+//                        AlertDialog.Builder builderInner = new AlertDialog.Builder(MainActivity.this);
+//                        builderInner.setMessage(gameAdapter.getCursor().getString(0));
+//                        builderInner.setTitle("Your Selected Item is");
+//                        builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog,int which) {
+//                                dialog.dismiss();
+//                            }
+//                        });
+//                        builderInner.show();
+                        Log.d(Constants.TAG, "Clicked no." + which);
+                    }
+                });
+                builder.show();
                 return true;
             case R.id.action_settings:
                 Log.d(Constants.TAG, "Postavke");
@@ -209,5 +238,25 @@ public class MainActivity extends AppCompatActivity {
                         Activity.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(
                 activity.getCurrentFocus().getWindowToken(), 0);
+    }
+
+    class GameAdapter extends CursorAdapter {
+
+        public GameAdapter(Context context, Cursor cursor) {
+            super(context, cursor, 0);
+        }
+
+        @Override
+        public View newView(Context context, Cursor cursor, ViewGroup parent) {
+            return LayoutInflater.from(context).inflate(R.layout.game_info, parent, false);
+        }
+
+        @Override
+        public void bindView(View view, Context context, Cursor cursor) {
+            TextView gameDate = (TextView) view.findViewById(R.id.game_date);
+            TextView gameScore = (TextView) view.findViewById(R.id.game_score);
+            gameDate.setText(cursor.getString(1));
+            gameScore.setText(Utility.stringScoreFromDatabase(new int[] {cursor.getInt(2), cursor.getInt(3)}));
+        }
     }
 }
