@@ -23,10 +23,17 @@
         android:title="@string/action_prethodne"
     />
     <item
+        android:id="@+id/action_promjeni_djelitelja"
+        android:orderInCategory="3"
+        android:title="@string/action_promjeni_djelitelja"
+    />
+    <!--
+    <item
         android:id="@+id/action_settings"
         android:orderInCategory="3"
         android:title="@string/action_settings"
         app:showAsAction="never"
+    -->
     />
     <item
         android:id="@+id/action_about"
