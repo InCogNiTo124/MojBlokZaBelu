@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -18,7 +17,8 @@
     <RadioGroup
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:id="@+id/radio_group">
 
         <RadioButton
             android:id="@+id/label_mi"
@@ -127,8 +127,9 @@
         android:padding="10dp"
         android:text="@string/default_score"
         android:textAlignment="center"
-        android:textSize="30sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:typeface="monospace"
+        android:textSize="30sp"/>
 
     <TextView
         android:id="@+id/bodovi"

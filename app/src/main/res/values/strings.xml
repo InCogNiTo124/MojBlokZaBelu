@@ -12,7 +12,14 @@
     <string name="gumb_tekst">Dodaj bodove</string>
     <string name="action_nova_igra">Nova igra</string>
     <string name="default_score">0 | 0</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="toast_error_zvanja">Provjerite unešena zvanja</string>
+    <string name="toast_error_bodovi">Provjerite unesene bodove</string>
+    <string name="toast_error_zvali">Nije označeno tko je zvao</string>
+    <string name="action_promjeni_djelitelja">Promjeni djelitelja</string>
+    <string name="continue_game">Jeste li sigurni da želite nastaviti ovu igru?</string>
+    <string name="upozorenje">Upozorenje</string>
+    <string name="button_ok">OK</string>
+    <string name="button_cancel">Odustani</string>
+    <string name="app_about_msg">Moj blok za belu\n\nmarijansmetko123@gmail.com\nmarijan.smetko@fer.hr\nhttps://github.com/InCogNiTo124/</string>
+    <string name="app_about_title">O aplikaciji</string>
 </resources>

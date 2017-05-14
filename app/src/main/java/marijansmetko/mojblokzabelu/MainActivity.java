@@ -5,16 +5,16 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.view.LayoutInflaterCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +23,9 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CursorAdapter;
 import android.widget.EditText;
+import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -38,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     CheckBox belaVi;
     TextView ukupanScore;
     TextView bodovi;
+    RadioGroup zvaliMi;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
         belaVi = (CheckBox) findViewById(R.id.bela_vi);
         ukupanScore = (TextView) findViewById(R.id.ukupan_score);
         bodovi = (TextView) findViewById(R.id.bodovi);
+        zvaliMi = (RadioGroup) findViewById(R.id.radio_group);
 
         bodoviMi.addTextChangedListener(new TextWatcher() {
             @Override
@@ -115,15 +119,21 @@ public class MainActivity extends AppCompatActivity {
         belaMi.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                belaVi.setChecked(!isChecked);
+                if (isChecked) {
+                    belaVi.setChecked(!isChecked);
+                }
             }
         });
         belaVi.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                belaMi.setChecked(!isChecked);
+                if (isChecked) {
+                    belaMi.setChecked(!isChecked);
+                }
             }
         });
+
+        bodovi.setMovementMethod(new ScrollingMovementMethod());
 
         updateUI();
     }
@@ -153,35 +163,58 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             case R.id.action_obrisi:
                 Log.d(Constants.TAG, "Obrisi");
+                dbHelper.deleteLastPoints();
+                updateUI();
                 return true;
             case R.id.action_prethodne:
                 Cursor cursor = dbHelper.getAllGames();
-                GameAdapter gameAdapter = new GameAdapter(this, cursor);
+                final GameAdapter gameAdapter = new GameAdapter(this, cursor);
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setAdapter(gameAdapter, new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
-//                        AlertDialog.Builder builderInner = new AlertDialog.Builder(MainActivity.this);
-//                        builderInner.setMessage(gameAdapter.getCursor().getString(0));
-//                        builderInner.setTitle("Your Selected Item is");
-//                        builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-//                            @Override
-//                            public void onClick(DialogInterface dialog,int which) {
-//                                dialog.dismiss();
-//                            }
-//                        });
-//                        builderInner.show();
+                    public void onClick(DialogInterface dialog, final int which) {
+                        AlertDialog.Builder builderInner = new AlertDialog.Builder(MainActivity.this);
+                        builderInner.setMessage(R.string.continue_game);
+                        builderInner.setTitle(R.string.upozorenje);
+                        builderInner.setPositiveButton(R.string.button_ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int nevermind) {
+                                dialog.dismiss();
+                                dbHelper.setCurrentGame(gameAdapter.getItem(which));
+                                updateUI();
+                            }
+                        });
+                        builderInner.setNeutralButton(R.string.button_cancel, new DialogInterface.OnClickListener() {
+
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                        builderInner.show();
                         Log.d(Constants.TAG, "Clicked no." + which);
                     }
                 });
                 builder.show();
+                this.updateUI();
                 return true;
-            case R.id.action_settings:
-                Log.d(Constants.TAG, "Postavke");
-                return true;
+//            case R.id.action_settings:
+//                Log.d(Constants.TAG, "Postavke");
+//                return true;
             case R.id.action_about:
+                AlertDialog.Builder builderAbout = new AlertDialog.Builder(this);
+                builderAbout.setTitle(R.string.app_about_title)
+                        .setMessage(R.string.app_about_msg)
+                        .setPositiveButton(R.string.button_ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        }).show();
                 Log.d(Constants.TAG, "O aplikaciji");
                 return true;
+            case R.id.action_promjeni_djelitelja:
+                Log.d(Constants.TAG, "Promjeni djelitelja");
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -227,9 +260,45 @@ public class MainActivity extends AppCompatActivity {
         int miBodovi = bodoviMi.getText().length() == 0 ? 0 : Integer.parseInt(bodoviMi.getText().toString());
         int viBodovi = bodoviVi.getText().length() == 0 ? 0 : Integer.parseInt(bodoviVi.getText().toString());
         int miZvanja = zvanjaMi.getText().length() == 0 ? 0 : Integer.parseInt(zvanjaMi.getText().toString());
-        int viZvanja = zvanjaMi.getText().length() == 0 ? 0 : Integer.parseInt(zvanjaVi.getText().toString());
-        dbHelper.addPoints(miBodovi, viBodovi);
-        updateUI();
+        int viZvanja = zvanjaVi.getText().length() == 0 ? 0 : Integer.parseInt(zvanjaVi.getText().toString());
+        boolean miBela = belaMi.isChecked();
+        boolean viBela = belaVi.isChecked();
+        int miZvali = zvaliMi.getCheckedRadioButtonId();
+        if (miZvali < 0) {
+            Toast.makeText(this, R.string.toast_error_zvali, Toast.LENGTH_SHORT).show();
+        } else if (!provjeriZvanje(miZvanja) || !provjeriZvanje(viZvanja)) {
+            Toast.makeText(this, R.string.toast_error_zvanja, Toast.LENGTH_SHORT).show();
+        } else if (miBodovi + viBodovi != Constants.MAX_POINTS &&
+                !(miBodovi == Constants.STIGLJA || viBodovi == Constants.STIGLJA)) {
+            Toast.makeText(this, R.string.toast_error_bodovi, Toast.LENGTH_SHORT).show();
+        } else if (miZvanja != 0 && viZvanja != 0) {
+            /* SHOULD NEVER HAPPEN BUT ANYWAYS... */
+            Toast.makeText(this, R.string.toast_error_zvanja, Toast.LENGTH_SHORT).show();
+        } else {
+            addPoints(miBodovi, viBodovi, miZvanja, viZvanja, miBela, viBela, miZvali  == R.id.label_mi);
+            updateUI();
+        }
+    }
+
+    public void addPoints(int miBodovi, int viBodovi, int miZvanja, int viZvanja, boolean miBela, boolean viBela, boolean miZvali) {
+        int mi = miBodovi + miZvanja;
+        int vi = viBodovi + viZvanja;
+
+        if (miBela) {
+            mi += Constants.BELA;
+        } else if (viBela) {
+            vi += Constants.BELA;
+        }
+
+        if (miZvali && mi <= vi || vi >= Constants.STIGLJA) {
+            vi += mi;
+            mi = 0;
+        } else if (!miZvali /* == viZvali*/ && vi <= mi || mi >= Constants.STIGLJA) {
+            mi += vi;
+            vi = 0;
+        }
+
+        dbHelper.addPoints(mi ,vi);
     }
 
     public static void hideSoftKeyboard(Activity activity) {
@@ -240,9 +309,9 @@ public class MainActivity extends AppCompatActivity {
                 activity.getCurrentFocus().getWindowToken(), 0);
     }
 
-    class GameAdapter extends CursorAdapter {
+    private class GameAdapter extends CursorAdapter {
 
-        public GameAdapter(Context context, Cursor cursor) {
+        GameAdapter(Context context, Cursor cursor) {
             super(context, cursor, 0);
         }
 
@@ -256,7 +325,25 @@ public class MainActivity extends AppCompatActivity {
             TextView gameDate = (TextView) view.findViewById(R.id.game_date);
             TextView gameScore = (TextView) view.findViewById(R.id.game_score);
             gameDate.setText(cursor.getString(1));
-            gameScore.setText(Utility.stringScoreFromDatabase(new int[] {cursor.getInt(2), cursor.getInt(3)}));
+            int[] a = new int[] {cursor.getInt(2), cursor.getInt(3)};
+            if (a[0] > a[1] && a[0] > Constants.WIN_POINTS) {
+                gameScore.setTextColor(Color.parseColor("#00A000"));
+            } else if (a[1] > a[0] && a[1] > Constants.WIN_POINTS) {
+                gameScore.setTextColor(Color.parseColor("#ff0000"));
+            } else {
+                gameScore.setTextColor(Color.parseColor("#0080f0"));
+            }
+            gameScore.setText(Utility.stringScoreFromDatabase(a));
+        }
+
+        @Override
+        public Integer getItem(int position) {
+            Cursor c = this.getCursor();
+            int ID = -1;
+            if (c.moveToPosition(position)) {
+                ID = c.getInt(0);
+            }
+            return ID;
         }
     }
 }
